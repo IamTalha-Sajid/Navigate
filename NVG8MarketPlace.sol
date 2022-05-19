@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "./interfaces/IERC721Template.sol";
 import "./interfaces/IERC20Template.sol";
 import "./interfaces/StakingToken.sol";
+import "./interfaces/IStakingNFT.sol";
 
 contract NVG8Marketplace is Ownable {
     using Counters for Counters.Counter;
@@ -51,6 +52,7 @@ contract NVG8Marketplace is Ownable {
     mapping(uint256 => mapping(address => uint256))
     public dataTokenUseAllowance;
     StakingToken public stake;
+    StakingNFT public stakenft;
 
     // MODIFIERS
     modifier onlyFactoryOrOwner() {
@@ -172,4 +174,22 @@ contract NVG8Marketplace is Ownable {
         stake.reward(msg.sender);
         return true;
     }
+
+    //STAKING FUNCTIONALITY OF ERC721 TOKEN
+    function stakeNFT(uint256 _dataTokenId) public returns(bool) {
+        stakenft.setERC721Token(dataTokens[_dataTokenId].erc721Token);
+        stakenft.stakeNFT(dataTokens[_dataTokenId].owner);
+        return true;
+    }
+
+    function unstakeNFT(uint256 _dataTokenId) public returns(bool) {
+        stakenft.unstakeNFT(dataTokens[_dataTokenId].owner);
+        return true;
+    }
+
+    function claimReward() public returns(bool) {
+        stakenft.reward(msg.sender);
+        return true;
+    }
+
 }
